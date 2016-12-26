@@ -9,13 +9,13 @@ Initially played with processing js but latest version has a rotating shading cu
 To Do:
 Write scaffolding ...
 
-A. from 0 to circle, line, quad and potentially triangle shapes on the canvas.
-B. to create a rotated, static, square, vertices only.
-C. to animate a rotating square, vertices only.
-D. to animate a rotating square, vertices + edges.
-E. to create a rotated cube, static, with vertices only.
-F. to create a rotating cube, vertics only.
-G. to create a rotating cube, vertices + edges.
-H. to create a rotating cube, vertices + edges + faces (transparent).
-I. to create a rotating cube, vertices + edges + faces, with occlusion using normals.
-J. to create a rotating shaded cube, vertices + edges + faces, with occlusion using normal.
+1. from 0 to circle, line, quad and potentially triangle shapes on the canvas.
+2. to create a rotated, static, square, vertices only.
+3. to animate a rotating square, vertices only.
+4. to animate a rotating square, vertices + edges.
+5. to create a rotated cube, static, with vertices only.
+6. to create a rotating cube, vertics only.
+7. to create a rotating cube, vertices + edges.
+8. to create a rotating cube, vertices + edges + faces (transparent).
+9. to create a rotating cube, vertices + edges + faces, with occlusion using normals.
+10. to create a rotating shaded cube, vertices + edges + faces, with occlusion using normal.
