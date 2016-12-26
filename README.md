@@ -19,3 +19,6 @@ Write scaffolding ...
 8. to create a rotating cube, vertices + edges + faces (transparent).
 9. to create a rotating cube, vertices + edges + faces, with occlusion using normals.
 10. to create a rotating shaded cube, vertices + edges + faces, with occlusion using normal.
+
+Meanwhile [Preview rotating shaded cube](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mdogy/shadingCube/master/shadedcube.html).
+
