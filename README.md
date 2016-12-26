@@ -8,6 +8,7 @@ Initially played with processing js but latest version has a rotating shading cu
 
 To Do:
 Write scaffolding ...
+
 A. from 0 to circle, line, quad and potentially triangle shapes on the canvas.
 B. to create a rotated, static, square, vertices only.
 C. to animate a rotating square, vertices only.
