@@ -1,0 +1,159 @@
+<html>
+<head>
+  <script src="processing.js"></script>
+  <title> Rotation Experiement </title>
+</head>
+<body><h1>Processing.js</h1>
+<h2>Simple processing.js via JavaScript</h2>
+<p>Clock</p>
+
+<p><canvas id="canvas1" width="400" height="400"></canvas></p>
+
+<script id="script1" type="text/javascript">
+function multiply3DMatrices(A,B){
+  return [[A[0][0]*B[0][0] + A[0][1]*B[1][0] + A[0][2]*B[2][0],
+           A[0][0]*B[0][1] + A[0][1]*B[1][1] + A[0][2]*B[2][1] ,
+           A[0][0]*B[0][2] + A[0][1]*B[1][2] + A[0][2]*B[2][2]],
+          [A[1][0]*B[0][0] + A[1][1]*B[1][0] + A[1][2]*B[2][0],
+           A[1][0]*B[0][1] + A[1][1]*B[1][1] + A[1][2]*B[2][1] ,
+           A[1][0]*B[0][2] + A[1][1]*B[1][2] + A[1][2]*B[2][2]],
+          [A[2][0]*B[0][0] + A[2][1]*B[1][0] + A[2][2]*B[2][0],
+           A[2][0]*B[0][1] + A[2][1]*B[1][1] + A[2][2]*B[2][1] ,
+           A[2][0]*B[0][2] + A[2][1]*B[1][2] + A[2][2]*B[2][2]],];
+}
+function apply3DMatrices(A,v){
+  return [A[0][0]*v[0] + A[0][1]*v[1] + A[0][2]*v[2],
+          A[1][0]*v[0] + A[1][1]*v[1] + A[1][2]*v[2],
+          A[2][0]*v[0] + A[2][1]*v[1] + A[2][2]*v[2],];
+}
+function makeRotationMatrix(theta0,theta1,theta2){
+    let THETA_MAT0 = [[Math.cos(theta0), Math.sin(theta0), 0],
+                  [-Math.sin(theta0), Math.cos(theta0), 0],
+                  [0,0,1]];
+    let THETA_MAT1 = [[1,0,0],
+                  [0,  Math.cos(theta1), Math.sin(theta1)],
+                  [0, -Math.sin(theta1), Math.cos(theta1)]];
+    let THETA_MAT2 = [[Math.cos(theta0), 0, Math.sin(theta0)],
+                   [0,1,0],
+                  [-Math.sin(theta0), 0, Math.cos(theta0)]];
+    return multiply3DMatrices(
+           multiply3DMatrices(THETA_MAT0,THETA_MAT1),THETA_MAT2);
+
+}
+// Simple way to attach js code to the canvas is by using a function
+function sketchProc(processing) {
+  processing.size(300,300);
+  // Override draw function, by default it will be called 60 times per second
+  let theta0 = 15*0.001;
+  let theta1 = -31*0.001;
+  let theta2 = 51*0.001;
+  let ROT = makeRotationMatrix(0,0,0);
+  let DELTA_ROT = makeRotationMatrix(theta0,theta1,theta2);
+  processing.draw = function() {
+    // determine center and max clock arm length
+    var centerX = processing.width / 2, centerY = processing.height / 2;
+    //console.log('centerX = '+centerX);
+    //console.log('centerY = '+centerY);
+
+
+    function makeCubicVertices(scale) {
+      vertices = [[ -scale, -scale, scale],
+                  [ +scale, -scale, scale],
+                  [ +scale, +scale, scale],
+                  [ -scale, +scale, scale],
+                  [ -scale, -scale, -scale],
+                  [ +scale, -scale, -scale],
+                  [ +scale, +scale, -scale],
+                  [ -scale, +scale, -scale],
+                ];
+      //console.log('scale = '+scale);
+      //console.log('scale-centerX = '+cale-centerX);
+      return vertices;
+    }
+
+    function makeCubicEdges(){
+      return [[0,1],[1,2],[2,3],[3,0],
+              [4,5],[5,6],[6,7],[7,4],
+              [4,0],[5,1],[6,2],[7,3],
+            ]
+    }
+
+    function project( vertices3D){
+      let vertices2D = [];
+      for (let vertex3D of vertices3D){
+        vertices2D.push([vertex3D[0],vertex3D[1]])
+      }
+      return vertices2D;
+    }
+
+    function renderVertices(vertices) {
+      for (let vertex of vertices){
+        //processing.ellipse(vertex[0], vertex[1], 10, 10);
+        //console.log(vertex)
+        processing.ellipse(vertex[0]+centerX, vertex[1]+centerY, 10, 10);
+      }
+    }
+    function renderEdges(vertices, edges){
+      let startpt, endpt = null;
+      for (let edge of edges){
+        startpt = vertices[edge[0]];
+        endpt = vertices[edge[1]];
+        processing.line(startpt[0]+centerX, startpt[1]+centerY,
+                        endpt[0]+centerX,   endpt[1]+centerY);
+      }
+
+    }
+
+
+    function rotateVertices3D(vertices, Rotation){
+      newVertices = []
+      for (let vertex of vertices){
+        newVertices.push(
+          apply3DMatrices(Rotation,vertex));
+      }
+      return newVertices;
+    }
+    processing.background(224);
+    scale = 50;
+    ROT = multiply3DMatrices(ROT,DELTA_ROT);
+
+    let cube_verts = project(rotateVertices3D(makeCubicVertices(scale),ROT));
+    renderEdges(cube_verts,makeCubicEdges());
+    renderVertices(cube_verts);
+
+
+    //var maxArmLength = Math.min(centerX, centerY);
+    // function drawArm(position, lengthScale, weight) {
+    //   processing.strokeWeight(weight);
+    //   processing.line(centerX, centerY,
+    //     centerX + Math.sin(position * 2 * Math.PI) * lengthScale * maxArmLength,
+    //     centerY - Math.cos(position * 2 * Math.PI) * lengthScale * maxArmLength);
+    // }
+
+    // erase background
+    //processing.background(224);
+
+    //var now = new Date();
+    //
+    // // Moving hours arm by small increments
+    // var hoursPosition = (now.getHours() % 12 + now.getMinutes() / 60) / 12;
+    // drawArm(hoursPosition, 0.5, 5);
+    //
+    // // Moving minutes arm by small increments
+    // var minutesPosition = (now.getMinutes() + now.getSeconds() / 60) / 60;
+    // drawArm(minutesPosition, 0.80, 3);
+    //
+    // // Moving hour arm by second increments
+    // var secondsPosition = now.getSeconds() / 60;
+    // drawArm(secondsPosition, 0.90, 1);
+  };
+
+}
+
+var canvas = document.getElementById("canvas1");
+// attaching the sketchProc function to the canvas
+var p = new Processing(canvas, sketchProc);
+// p.exit(); to detach it
+</script>
+</body>
+</html>

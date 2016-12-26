@@ -1,0 +1,115 @@
+<html>
+<head>
+  <script src="processing.js"></script>
+  <title> Rotation Experiement </title>
+</head>
+<body><h1>Processing.js</h1>
+<h2>Simple processing.js via JavaScript</h2>
+<p>Clock</p>
+
+<p><canvas id="canvas1" width="400" height="400"></canvas></p>
+
+<script id="script1" type="text/javascript">
+
+// Simple way to attach js code to the canvas is by using a function
+function sketchProc(processing) {
+  processing.size(300,300);
+  // Override draw function, by default it will be called 60 times per second
+  let angle = 0;
+  processing.draw = function() {
+    // determine center and max clock arm length
+    var centerX = processing.width / 2, centerY = processing.height / 2;
+    //console.log('centerX = '+centerX);
+    //console.log('centerY = '+centerY);
+
+
+    function makeSquareVertices(scale, centerX, centerY) {
+      vertices = [[ -scale, -scale],
+                  [ +scale, -scale],
+                  [ +scale, +scale],
+                  [ -scale, +scale],
+                ];
+      //console.log('scale = '+scale);
+      //console.log('scale-centerX = '+cale-centerX);
+      return vertices;
+    }
+
+    function makeSquareEdges(){
+      return [[0,1],[1,2],[2,3],[3,0]]
+    }
+    function renderVertices(vertices) {
+      for (let vertex of vertices){
+        //processing.ellipse(vertex[0], vertex[1], 10, 10);
+        //console.log(vertex)
+        processing.ellipse(vertex[0]+centerX, vertex[1]+centerY, 10, 10);
+      }
+    }
+    function renderEdges(vertices, edges){
+      let startpt, endpt = null;
+      for (let edge of edges){
+        startpt = vertices[edge[0]];
+        endpt = vertices[edge[1]];
+        processing.line(startpt[0]+centerX, startpt[1]+centerY,
+                        endpt[0]+centerX,   endpt[1]+centerY);
+      }
+
+    }
+    function rotateVertices2DbyAngle(vertices, angle){
+      newVertices = []
+      for (let vertex of vertices){
+        newVertices.push([
+          Math.cos(angle)*vertex[0]+Math.sin(angle)*vertex[1],
+          -Math.sin(angle)*vertex[0]+Math.cos(angle)*vertex[1],
+        ])
+      }
+      return newVertices;
+    }
+    processing.background(224);
+    scale = 50;
+    angle = (angle+0.01)%360;
+    renderEdges(rotateVertices2DbyAngle(
+    makeSquareVertices(scale, centerX, centerY),
+    angle), makeSquareEdges());
+
+    renderVertices(
+      rotateVertices2DbyAngle(
+      makeSquareVertices(scale, centerX, centerY),
+      angle)
+    );
+
+
+    //var maxArmLength = Math.min(centerX, centerY);
+    // function drawArm(position, lengthScale, weight) {
+    //   processing.strokeWeight(weight);
+    //   processing.line(centerX, centerY,
+    //     centerX + Math.sin(position * 2 * Math.PI) * lengthScale * maxArmLength,
+    //     centerY - Math.cos(position * 2 * Math.PI) * lengthScale * maxArmLength);
+    // }
+
+    // erase background
+    //processing.background(224);
+
+    //var now = new Date();
+    //
+    // // Moving hours arm by small increments
+    // var hoursPosition = (now.getHours() % 12 + now.getMinutes() / 60) / 12;
+    // drawArm(hoursPosition, 0.5, 5);
+    //
+    // // Moving minutes arm by small increments
+    // var minutesPosition = (now.getMinutes() + now.getSeconds() / 60) / 60;
+    // drawArm(minutesPosition, 0.80, 3);
+    //
+    // // Moving hour arm by second increments
+    // var secondsPosition = now.getSeconds() / 60;
+    // drawArm(secondsPosition, 0.90, 1);
+  };
+
+}
+
+var canvas = document.getElementById("canvas1");
+// attaching the sketchProc function to the canvas
+var p = new Processing(canvas, sketchProc);
+// p.exit(); to detach it
+</script>
+</body>
+</html>
